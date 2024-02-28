@@ -7,7 +7,7 @@ import User from '../models/user_model.js'
 export const userSignup = async (req, res,next) => {
   const { username, email, password } = req.body;
   try {
-    if(username = ""||password=''||email='') res,status(500).json("all fields are required")
+    if(username == ""|| email == ""|| password==''){res,status(500).json("all fields are required")}
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       username,
