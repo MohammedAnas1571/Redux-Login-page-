@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { signInStart, signInSuccess, signInFailure } from '../Redux/user/createSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
+import Oauth from '../components/Oauth'
 
 const Login = () => {
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector(state => state.user);
+
+  const { loading, error } = useSelector(state => state.user); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -28,10 +30,10 @@ const Login = () => {
       console.error('Error:', error.response.data);
   
       if (error.response.status === 500) {
-        // Internal server error
+        
         dispatch(signInFailure("Internal error"));
       } else {
-        // Other errors
+     
         dispatch(signInFailure(error.response.data));
       }
     }
@@ -43,15 +45,16 @@ const Login = () => {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input className='bg-slate-200 rounded-lg  p-3 ' type="email" placeholder='Enter email' id='email' onChange={handlevalue} />
         <input className='bg-slate-200 rounded-lg  p-3' type="password" placeholder='Enter password' id='password' onChange={handlevalue} />
-        <button disabled={loading} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? "Loading" : "Signup"}</button>
+        <button disabled={loading} className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'>{loading ? "Loading" : "Login"}</button>
+        <Oauth/>     
       </form>
       <div className='flex gap-2 mt-5'>
-        <p>Dont have any account  ? </p>
+        <p>Don't have an account? </p>
         <Link to='/signUp'>
           <span className='text-blue-500'>Register </span>
         </Link>
       </div>
-      <p className='text-red-700'>{error ? (error || "something error") : ""}</p>
+      <p className='text-red-700'>{error ? (error || "Something went wrong") : ""}</p>
     </div>
   )
 }

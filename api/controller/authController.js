@@ -52,3 +52,55 @@ export const userLogin = async (req, res) => {
     res.status(500).json("internal server error");
   }
 };
+
+export const googleAuth = async (req, res) => {
+  const { email, name, photo } = req.body;
+  console.log(email, name);
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const token = jwt.sign({ id: user._id }, process.env.TOKEN, {
+        expiresIn: "7d",
+      });
+      const { password: hashedPassword, ...rest } = user._doc;
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json({ ...rest, message: "jfowpfh" });
+    } else {
+      const generatePassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      console.log(1);
+      const hashedPassword = await bcrypt.hash(generatePassword, 10); // await bcrypt.hash
+      console.log(2);
+
+      const newUser = new User({
+        email,
+        username:
+          name.split(" ").join("").toLowerCase() +
+          Math.floor(Math.random() * 1000).toString(),
+        profilePhoto: photo,
+        password: hashedPassword,
+      });
+      await newUser.save(); // Un-comment to save the new user
+
+      const token = jwt.sign({ id: newUser._id }, process.env.TOKEN, {
+        expiresIn: "7d",
+      });
+
+      const { password: hashedPassword2, ...rest } = newUser._doc;
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .json({ ...rest, message: "Created a new account!" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("internal error");
+  }
+};
