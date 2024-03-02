@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './Router/userRouter.js';
 import authRouter from './Router/authRouter.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ mongoose.connect(process.env.MONGO)
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser())
 
 // CORS Configuration
 app.use(cors({
@@ -23,9 +25,9 @@ app.use(cors({
   credentials: true, 
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
+ 
 // Routes
-app.use("/", userRoutes);
+app.use("/auth/user", userRoutes);
 app.use("/auth", authRouter);
 
 // Error handling middleware
